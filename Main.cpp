@@ -1,32 +1,85 @@
 #include <iostream>
-#include <cmath>
+#include <cctype>
+#include "Exception.h"
+#include "TemplateF.h"
+
 using namespace std;
 
-template <typename TemplParam>
-TemplParam half(TemplParam value)
+char character(char start, int offset)
 {
-    return value / 2;
-}
+    if (!isalpha(start))
+    {
+        throw invalidCharacterException();
+    }
 
-template <>
-int half<int>(int value)
-{
-    return static_cast<int>(round(value / 2.0));
-}
+    char result = start + offset;
 
+    if ((islower(start) && (!islower(result) || !isalpha(result))) ||
+        (isupper(start) && (!isupper(result) || !isalpha(result))))
+    {
+        throw invalidRangeException();
+    }
+
+    return result;
+}
 int main()
 {
-    cout << "half function:\n";
+    cout << "=== Template Function Tests ===\n";
+    cout << "Half of 10 (int): " << half(10) << endl;
+    cout << "Half of 11 (int): " << half(11) << endl;
+    cout << "Half of 20.0 (double): " << half(20.0) << endl;
+    cout << "Half of 13.5f (float): " << half(13.5f) << endl;
 
-    float f = 9.5f;
-    double d = 7.8;
-    int i1 = 9;
-    int i2 = 4;
+    
+    cout << "\n=== Character Offset Tests ===\n";
 
-    cout << "half(9.5f) = " << half(f) << endl;
-    cout << "half(7.8) = " << half(d) << endl;
-    cout << "half(9) = " << half(i1) << endl;
-    cout << "half(4) = " << half(i2) << endl;
+    try
+    {
+        cout << "character('a', 1) = " << character('a', 1) << endl;
+    }
+    catch (exception &e)
+    {
+        cout << e.what() << endl;
+    }
+
+    try
+    {
+        cout << "character('a', -1) = ";
+        cout << character('a', -1) << endl;
+    }
+    catch (exception &e)
+    {
+        cout << e.what() << endl;
+    }
+
+    try
+    {
+        cout << "character('Z', -1) = " << character('Z', -1) << endl;
+    }
+    catch (exception &e)
+    {
+        cout << e.what() << endl;
+    }
+
+    try
+    {
+        cout << "character('?', 5) = ";
+        cout << character('?', 5) << endl;
+    }
+    catch (exception &e)
+    {
+        cout << e.what() << endl;
+    }
+
+    try
+    {
+        cout << "character('A', 32) = ";
+        cout << character('A', 32) << endl;
+    }
+    catch (exception &e)
+    {
+        cout << e.what() << endl;
+    }
 
     return 0;
 }
